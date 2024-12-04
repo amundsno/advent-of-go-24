@@ -1,10 +1,11 @@
 package main
 
 import (
-	"advent-of-code/day01"
+	// "advent-of-code/day01"
+	"advent-of-code/day02"
 )
 
 func main() {
-	day01.SolveFirst("../day01/input.txt")
-	day01.SolveSecond("../day01/input.txt")
+	day02.SolveFirst("../day02/input.txt")
+	// day02.SolveSecond("../day01/input.txt")
 }
