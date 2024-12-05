@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func SolveFirst(inputPath string) {
+func readReports(inputPath string) [][]int {
 	file, err := os.Open(inputPath)
 	if err != nil {
 		log.Fatalf("unexpected error ocurred: %v", err)
@@ -18,11 +18,19 @@ func SolveFirst(inputPath string) {
 	if err != nil {
 		log.Fatalf("unexpected error ocurred: %v", err)
 	}
+	return reports
+}
 
-	rules := []Rule{new(DifferenceRule), new(DirectionalRule)}
-	result := CountSafeReports(reports, rules)
+func SolveFirst(inputPath string) {
+	reports := readReports(inputPath)
+	result := CountSafeReports(reports, IsSafe)
 	fmt.Printf("The number of safe reports are: %v\n", result)
+}
 
+func SolveSecond(inputPath string) {
+	reports := readReports(inputPath)
+	result := CountSafeReports(reports, IsSafeWithOneBadLevel)
+	fmt.Printf("The number of safe reports when accepting one bad level are: %v\n", result)
 }
 
 func IsSafe(report []int, rules []Rule) bool {
@@ -34,10 +42,23 @@ func IsSafe(report []int, rules []Rule) bool {
 	return true
 }
 
-func CountSafeReports(reports [][]int, rules []Rule) int {
+func IsSafeWithOneBadLevel(report []int, rules []Rule) bool {
+	for i := 0; i < len(report); i++ {
+		var left, right []int
+		left = append(left, report[:i]...)
+		right = append(right, report[i+1:]...)
+		if IsSafe(append(left, right...), rules) {
+			return true
+		}
+	}
+	return false
+}
+
+func CountSafeReports(reports [][]int, isSafeFunc func([]int, []Rule) bool) int {
+	rules := []Rule{new(DifferenceRule), new(DirectionalRule)}
 	count := 0
 	for _, report := range reports {
-		if IsSafe(report, rules) {
+		if isSafeFunc(report, rules) {
 			count++
 		}
 	}
@@ -67,12 +88,9 @@ func (r DifferenceRule) Evaluate(list []int) bool {
 type DirectionalRule struct{}
 
 func (r DirectionalRule) Evaluate(list []int) bool {
-	if len(list) < 2 {
-		return false
-	}
-	isIncreasing := list[1] > list[0]
+	initialDifference := list[0] - list[1]
 	for i := 1; i < len(list)-1; i++ {
-		if (isIncreasing && list[i] > list[i+1]) || (!isIncreasing && list[i] < list[i+1]) {
+		if initialDifference*(list[i]-list[i+1]) < 0 {
 			return false
 		}
 	}
