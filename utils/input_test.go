@@ -57,3 +57,25 @@ func TestReadRowsToSlices(t *testing.T) {
 		})
 	}
 }
+
+func TestReadToString(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{"basic case", "hello\nthis is a\ttest", "hello\nthis is a\ttest"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			reader := strings.NewReader(tc.input)
+			result, err := ReadToString(reader)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if result != tc.expected {
+				t.Errorf("expected: %v, got: %v", tc.expected, result)
+			}
+		})
+	}
+}

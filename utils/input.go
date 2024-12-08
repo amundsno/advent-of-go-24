@@ -61,3 +61,11 @@ func ReadRowsToSlices(reader io.Reader, delimiter string) ([][]int, error) {
 	}
 	return rows, nil
 }
+
+func ReadToString(reader io.Reader) (string, error) {
+	content, err := io.ReadAll(reader)
+	if err != nil {
+		return "", err
+	}
+	return string(content), nil
+}
