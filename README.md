@@ -3,7 +3,10 @@
 ## Daily notes
 
 ### Day 04
-My original idea for today was to use a single line regex. However, it turns out that capturing overlapping patterns are not straight forward. For instance, the diagonal regex captures multiple lines into one match. Any other matches found on those lines are not captured.
+My original idea for today was to use a single line regex. However, it turns out that capturing overlapping patterns are not straight forward. For instance, the diagonal regex captures multiple lines into one match. Any other matches found on those lines are not captured. I am content with the scanning solution I came up with instead. Treating the input as a single line simplifies the problem somewhat. I could perhaps have generalized this solution, taking valid steps and words as function arguments.
+
+**Inspiration from others**
+- I really liked [this solution for Python on Reddit](https://www.reddit.com/r/adventofcode/comments/1h689qf/comment/m0bw4f7/), using a dictionary (map) and clever loops to iterate over all directions. I did not use it for my solution, but implementing something similar in Go would have been interesting.
 
 ### Day 03
 Learned how to work with regular expressions in Go. For the second part, I could not find a regular expression to extract the valid multiplication elements without using lookahead features that are not supported by Go natively. Still happy with the two-step solution.

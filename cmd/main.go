@@ -9,5 +9,5 @@ import (
 
 func main() {
 	day04.SolveFirst("../day04/input.txt")
-	// day04.SolveSecond("../day04/input.txt")
+	day04.SolveSecond("../day04/input.txt")
 }

@@ -69,7 +69,7 @@ func TestIsWord(t *testing.T) {
 	}
 }
 
-func TestGetGridWidth(t *testing.T) {
+func TestGetContentWidth(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
@@ -80,7 +80,7 @@ func TestGetGridWidth(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			width := GetGridWidth(tc.input)
+			width := GetContentWidth(tc.input)
 			if width != tc.expected {
 				t.Errorf("expected: %v, got: %v", tc.expected, width)
 			}
@@ -110,6 +110,52 @@ func TestCountAllWords(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			count := CountAllWords(tc.input)
+			if count != tc.expected {
+				t.Errorf("expected: %v, got: %v", tc.expected, count)
+			}
+		})
+	}
+}
+
+const cross = `M.M
+.A.
+S.S
+.A.
+M.M`
+
+func TestIsCrossCentre(t *testing.T) {
+	tests := []struct {
+		name       string
+		content    string
+		startIndex int
+		width      int
+		expected   bool
+	}{
+		{"normal", cross, 5, 4, true},
+		{"reversed", cross, 13, 4, true},
+		{"not corss", cross, 0, 4, false},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			result := IsCrossCentre(tc.startIndex, tc.width, &tc.content)
+			if result != tc.expected {
+				t.Errorf("expected: %v, got: %v", tc.expected, result)
+			}
+		})
+	}
+}
+
+func TestCountAllCrosses(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected int
+	}{
+		{"sample", sample, 9},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			count := CountAllCrosses(tc.input)
 			if count != tc.expected {
 				t.Errorf("expected: %v, got: %v", tc.expected, count)
 			}
