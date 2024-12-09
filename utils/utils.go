@@ -7,3 +7,14 @@ func SumSlice(slice []int) int {
 	}
 	return sum
 }
+
+// Performance optimized conversion algorithm (https://dev.to/chigbeef_77/bool-int-but-stupid-in-go-3jb3)
+func BoolToInt(b bool) int {
+	var i int
+	if b {
+		i = 1
+	} else {
+		i = 0
+	}
+	return i
+}
