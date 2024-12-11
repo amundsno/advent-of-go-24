@@ -3,27 +3,11 @@ package day04
 import (
 	"advent-of-code/utils"
 	"fmt"
-	"log"
-	"os"
 	"strings"
 )
 
-func readInput(inputPath string) string {
-	file, err := os.Open(inputPath)
-	if err != nil {
-		log.Fatalf("unexpected error ocurred: %v", err)
-	}
-	defer file.Close()
-
-	content, err := utils.ReadToString(file)
-	if err != nil {
-		log.Fatalf("unexpected error ocurred: %v", err)
-	}
-	return content
-}
-
 func SolveFirst(inputPath string) {
-	content := readInput(inputPath)
+	content := utils.ReadFileToString(inputPath)
 	count := CountAllWords(content)
 	fmt.Printf("The number of words are: %v\n", count)
 }
@@ -59,7 +43,7 @@ func IsWord(startIndex, step int, content *string) bool {
 }
 
 func SolveSecond(inputPath string) {
-	content := readInput(inputPath)
+	content := utils.ReadFileToString(inputPath)
 	count := CountAllCrosses(content)
 	fmt.Printf("The number of crosses are: %v\n", count)
 }

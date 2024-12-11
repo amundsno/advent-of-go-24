@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -62,10 +63,24 @@ func ReadRowsToSlices(reader io.Reader, delimiter string) ([][]int, error) {
 	return rows, nil
 }
 
-func ReadToString(reader io.Reader) (string, error) {
+func readToString(reader io.Reader) (string, error) {
 	content, err := io.ReadAll(reader)
 	if err != nil {
 		return "", err
 	}
 	return string(content), nil
+}
+
+func ReadFileToString(inputPath string) string {
+	file, err := os.Open(inputPath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	content, err := readToString(file)
+	if err != nil {
+		panic(err)
+	}
+	return content
 }

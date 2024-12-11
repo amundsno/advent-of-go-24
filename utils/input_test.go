@@ -69,7 +69,7 @@ func TestReadToString(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			reader := strings.NewReader(tc.input)
-			result, err := ReadToString(reader)
+			result, err := readToString(reader)
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}

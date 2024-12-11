@@ -4,27 +4,12 @@ import (
 	"advent-of-code/utils"
 	"fmt"
 	"log"
-	"os"
 	"regexp"
 	"strconv"
 )
 
-func readInput(inputPath string) string {
-	file, err := os.Open(inputPath)
-	if err != nil {
-		log.Fatalf("unexpected error ocurred: %v", err)
-	}
-	defer file.Close()
-
-	content, err := utils.ReadToString(file)
-	if err != nil {
-		log.Fatalf("unexpected error ocurred: %v", err)
-	}
-	return content
-}
-
 func SolveFirst(inputPath string) {
-	content := readInput(inputPath)
+	content := utils.ReadFileToString(inputPath)
 	sum, err := SumValidMultiplications(content)
 	if err != nil {
 		log.Fatalf("unexpected error ocurred: %v", err)
@@ -33,7 +18,7 @@ func SolveFirst(inputPath string) {
 }
 
 func SolveSecond(inputPath string) {
-	content := readInput(inputPath)
+	content := utils.ReadFileToString(inputPath)
 	fmt.Println(content)
 
 	enabledRegions := ExtractEnabledRegions(content)
