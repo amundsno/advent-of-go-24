@@ -15,7 +15,8 @@ func SolveFirst(inputPath string) {
 	}
 	defer file.Close()
 
-	columns, err := utils.ReadColumnsToSlices(file, "   ", 2)
+	rows, err := utils.ReadRowsToSlices(file, "   ")
+	columns := utils.Transpose(rows)
 	if err != nil {
 		log.Fatalf("unexpected error ocurred: %v", err)
 	}
@@ -53,7 +54,8 @@ func SolveSecond(inputPath string) {
 	}
 	defer file.Close()
 
-	columns, err := utils.ReadColumnsToSlices(file, "   ", 2)
+	rows, err := utils.ReadRowsToSlices(file, "   ")
+	columns := utils.Transpose(rows)
 	if err != nil {
 		log.Fatalf("unexpected error ocurred: %v", err)
 	}

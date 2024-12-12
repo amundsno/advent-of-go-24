@@ -18,3 +18,15 @@ func BoolToInt(b bool) int {
 	}
 	return i
 }
+
+func Transpose[T any](s [][]T) [][]T {
+	transposed := make([][]T, len(s[0]))
+
+	for _, row := range s {
+		for j, val := range row {
+			transposed[j] = append(transposed[j], val)
+		}
+	}
+
+	return transposed
+}
