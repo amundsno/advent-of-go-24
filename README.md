@@ -1,6 +1,22 @@
 # Advent of Code 2024
 
+My goal for this year's advent of code is to enjoy the puzzles and gain some familiarity with [Go](https://go.dev/). Thus, my process is as follows:
+1. Solve the problem on my own first - i.e. without AI support.
+2. Look on [Reddit](https://www.reddit.com/r/adventofcode/) for inspiration and alternative solutions.
+3. Ask an LLM for code review, feedback and other possible improvements.
+
 ## Daily notes
+
+### Day 05
+I am very happy with my solution for today, although the process was a bit convoluted. I spent 2 hours trying to implement what I suddenly realized was and overly complicated and inefficient *sorting algorithm*. I should probably have caught on earlier, considering that I named my variables e.g. `comesBefore` or `comesAfter`. This was a good reminder of thouroughly understanding what type of problem it is before implementing a solution.
+
+Nevertheless, I got to practise some important concepts:
+- Closures - I wrote my first proper closure in Go for custom sorting of the list of numbers!
+- Generics - On my way to the final solution, I got to practise Go generics.
+- Primitive Obsession - My original solution smelled of [primitive obsession](https://wiki.c2.com/?PrimitiveObsession), so I implemented a few value objects.
+
+Valuable ChatGPT feedback:
+- Great suggestion by ChatGPT to replace my original `slices.Contains(...)` (O(n)) logic with map lookups (O(1)) since I was already creating maps for the sorting function. This greatly improved readability as well.
 
 ### Day 04
 My original idea for today was to use a single line regex. However, it turns out that capturing overlapping patterns are not straight forward. For instance, the diagonal regex captures multiple lines into one match. Any other matches found on those lines are not captured. I am content with the scanning solution I came up with instead. Treating the input as a single line simplifies the problem somewhat. I could perhaps have generalized this solution, taking valid steps and words as function arguments.
@@ -33,3 +49,7 @@ Trying out Go for the first time, after completing [A Tour of Go](https://go.dev
 - Testing
     - Use table-driven tests with `t.Run(...)` to create subtests
     - Use non-fatal assertions with `t.Errorf(...)` instead of `t.Fatalf(...)` to ensure all test scenarios are run, even if one fails
+
+- Errors
+    - To create an error with a message, use `fmt.Errorf(...)`
+    - Use `panic(...)` with an error message (string) for situations that won't be handled at runtime
