@@ -56,3 +56,38 @@ func ReadFileToString(inputPath string) string {
 	}
 	return content
 }
+
+func readToMap(reader io.Reader, delimiter string) (map[int]map[int]string, error) {
+	m := make(map[int]map[int]string)
+	scanner := bufio.NewScanner(reader)
+	iRow := -1
+	for scanner.Scan() {
+		iRow++
+		text := scanner.Text()
+
+		row := strings.Split(text, delimiter)
+		m[iRow] = make(map[int]string)
+
+		for iCol, val := range row {
+			m[iRow][iCol] = val
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func ReadFileToMap(inputPath, delimiter string) map[int]map[int]string {
+	file, err := os.Open(inputPath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	content, err := readToMap(file, delimiter)
+	if err != nil {
+		panic(err)
+	}
+	return content
+}

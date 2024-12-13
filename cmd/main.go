@@ -5,9 +5,10 @@ import (
 	// "advent-of-code/day02"
 	// "advent-of-code/day03"
 	// "advent-of-code/day04"
-	"advent-of-code/day05"
+	// "advent-of-code/day05"
+	"advent-of-code/day06"
 )
 
 func main() {
-	day05.Solve("../day05/input.txt")
+	day06.Solve("../day06/input.txt")
 }
