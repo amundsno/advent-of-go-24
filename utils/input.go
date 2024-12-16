@@ -9,6 +9,35 @@ import (
 	"strings"
 )
 
+func readToGrid(reader io.Reader, delimiter string) ([][]string, error) {
+	grid := [][]string{}
+	scanner := bufio.NewScanner(reader)
+	for scanner.Scan() {
+		tokens := strings.Split(scanner.Text(), delimiter)
+		grid = append(grid, tokens)
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return grid, nil
+}
+
+func ReadFileToGrid(inputPath, delimiter string) [][]string {
+	file, err := os.Open(inputPath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	content, err := readToGrid(file, delimiter)
+	if err != nil {
+		panic(err)
+	}
+	return content
+}
+
+// TODO: Refactor I/O. Create a utils for converting to int, instead of doing it in the reader.
+// Create a general readFile. Check stash.
 func ReadRowsToSlices(reader io.Reader, delimiter string) ([][]int, error) {
 	rows := [][]int{}
 	scanner := bufio.NewScanner(reader)

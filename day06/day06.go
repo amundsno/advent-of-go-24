@@ -6,68 +6,85 @@ import (
 	"iter"
 	"maps"
 	"slices"
+	"strings"
 )
 
 const OBSTACLE, VISITED, LEFT, UP, RIGHT, DOWN = "#", "X", "<", "^", ">", "v"
 
+type GuardPath [][]string
+
+type Pose struct {
+	i, j int
+	dir  string
+}
+
+type Position struct {
+	i, j int
+}
+
 func Solve(inputPath string) {
-	guardMap := utils.ReadFileToMap(inputPath, "")
-	Traverse(&guardMap)
-	count := CountUniquePositionsTraversed(&guardMap)
+	gp := GuardPath(utils.ReadFileToGrid(inputPath, ""))
+	startPose := FindStartPose(&gp)
+
+	// Part 01
+	uniquePositionsMap := make(map[Position]bool)
+	for pose := range gp.Steps(startPose) {
+		uniquePositionsMap[Position{pose.i, pose.j}] = true
+	}
+	count := utils.IterLength(maps.Keys(uniquePositionsMap))
 	fmt.Printf("Part 01: %v (unique positions visited)\n", count)
 }
 
-func PrintGuardMap(m *map[int]map[int]string) {
-	for i := range slices.Sorted(maps.Keys(*m)) {
-		fmt.Print(i)
-		for j := range slices.Sorted(maps.Keys((*m)[i])) {
-			fmt.Print((*m)[i][j])
+func (gp *GuardPath) Steps(startPose Pose) iter.Seq[Pose] {
+	iMax := len(*gp) - 1
+	jMax := len((*gp)[0]) - 1
+	di, dj := 0, 0
+	pose := startPose
+
+	return func(yield func(Pose) bool) {
+		for {
+			if !yield(pose) {
+				return
+			}
+			for {
+				di, dj = ComputeNextStep(pose.dir)
+				if IsOutOfBounds(pose.i+di, pose.j+dj, iMax, jMax) {
+					return
+				}
+				if (*gp)[pose.i+di][pose.j+dj] != OBSTACLE {
+					break
+				}
+				pose.dir = GetNextDirection(pose.dir)
+			}
+			pose.i += di
+			pose.j += dj
 		}
-		fmt.Println()
 	}
 }
 
-func Traverse(m *map[int]map[int]string) {
-	i, j := FindStartPos(m)
-	iMax, jMax := GetIndexLimits(m)
-	di, dj := 0, 0
-	dir := (*m)[i][j]
-
-	outOfBounds := false
-	for !outOfBounds {
-		(*m)[i][j] = dir
-		for {
-			di, dj = ComputeNextStep(dir)
-			if (*m)[i+di][j+dj] != OBSTACLE {
-				break
-			}
-			dir = GetNextDirection(dir)
-		}
-		(*m)[i][j] = VISITED
-		i += di
-		j += dj
-		outOfBounds = IsOutOfBounds(i, j, iMax, jMax)
+func (gp GuardPath) String() string {
+	s := ""
+	for _, row := range gp {
+		s += strings.Join(row, "")
+		s += "\n"
 	}
+	return s
+}
+
+func FindStartPose(gp *GuardPath) Pose {
+	directions := []string{UP, RIGHT, LEFT, DOWN}
+	for i, row := range *gp {
+		for _, dir := range directions {
+			if j := slices.Index(row, dir); j > 0 {
+				return Pose{i, j, (*gp)[i][j]}
+			}
+		}
+	}
+	panic("failed to find start pose")
 }
 
 func IsOutOfBounds(i, j, iMax, jMax int) bool {
 	return i < 0 || i > iMax || j < 0 || j > jMax
-}
-
-func seqLen[V any](s iter.Seq[V]) int {
-	count := 0
-	for range s {
-		count++
-	}
-	return count
-}
-
-func GetIndexLimits(m *map[int]map[int]string) (iMax, jMax int) {
-	height := seqLen(maps.Keys(*m))
-	width := seqLen(maps.Keys((*m)[0]))
-	iMax = height - 1
-	jMax = width - 1
-	return iMax, jMax
 }
 
 func GetNextDirection(dir string) string {
@@ -94,27 +111,4 @@ func ComputeNextStep(dir string) (di int, dj int) {
 	default:
 		return 1, 0
 	}
-}
-
-func FindStartPos(m *map[int]map[int]string) (i, j int) {
-	for i, row := range *m {
-		for j, val := range row {
-			if val == RIGHT || val == LEFT || val == UP || val == DOWN {
-				return i, j
-			}
-		}
-	}
-	panic("failed to find start positon")
-}
-
-func CountUniquePositionsTraversed(m *map[int]map[int]string) int {
-	count := 0
-	for _, row := range *m {
-		for _, val := range row {
-			if val == VISITED {
-				count++
-			}
-		}
-	}
-	return count
 }

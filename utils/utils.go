@@ -1,5 +1,7 @@
 package utils
 
+import "iter"
+
 func SumSlice(slice []int) int {
 	sum := 0
 	for _, v := range slice {
@@ -29,4 +31,12 @@ func Transpose[T any](s [][]T) [][]T {
 	}
 
 	return transposed
+}
+
+func IterLength[V any](s iter.Seq[V]) int {
+	count := 0
+	for range s {
+		count++
+	}
+	return count
 }
