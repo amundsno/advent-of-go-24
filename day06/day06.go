@@ -7,6 +7,7 @@ import (
 	"maps"
 	"slices"
 	"strings"
+	"sync"
 )
 
 const OBSTACLE, VISITED, LEFT, UP, RIGHT, DOWN = "#", "X", "<", "^", ">", "v"
@@ -25,23 +26,77 @@ type Position struct {
 func Solve(inputPath string) {
 	gp := GuardPath(utils.ReadFileToGrid(inputPath, ""))
 	startPose := FindStartPose(&gp)
+	prevPose := startPose
 
-	// Part 01
-	uniquePositionsMap := make(map[Position]bool)
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	obstacleCount := 0
+
+	visitedPosition := make(map[Position]bool)
+
 	for pose := range gp.Steps(startPose) {
-		uniquePositionsMap[Position{pose.i, pose.j}] = true
+		// Part 02 - Do not put an obstacle in the same position twice
+		if visitedPosition[Position{pose.i, pose.j}] {
+			continue
+		}
+
+		visitedPosition[Position{pose.i, pose.j}] = true
+
+		// Part 02 - Do not put an obstacle on the start position
+		if pose == startPose {
+			continue
+		}
+
+		blockedPath := gp.DeepCopy()
+		blockedPath[pose.i][pose.j] = OBSTACLE
+
+		wg.Add(1)
+		go func(from Pose) {
+			defer wg.Done()
+			if IsLoop(&blockedPath, from) {
+				mu.Lock()
+				obstacleCount++
+				mu.Unlock()
+			}
+		}(prevPose)
+
+		prevPose = pose
 	}
-	count := utils.IterLength(maps.Keys(uniquePositionsMap))
+	count := utils.IterLength(maps.Keys(visitedPosition))
 	fmt.Printf("Part 01: %v (unique positions visited)\n", count)
+
+	wg.Wait()
+	fmt.Printf("Part 02: %v (number of obstructions that create a loop)\n", obstacleCount)
+}
+
+func IsLoop(gp *GuardPath, startPose Pose) bool {
+	visitedPose := make(map[Pose]bool)
+	for pose := range gp.Steps(startPose) {
+		if visitedPose[pose] {
+			return true
+		}
+		visitedPose[pose] = true
+	}
+	return false
+}
+
+func (gp *GuardPath) DeepCopy() GuardPath {
+	cpy := make(GuardPath, len(*gp))
+	for i, row := range *gp {
+		cpy[i] = make([]string, len(row))
+		copy(cpy[i], (*gp)[i])
+	}
+	return cpy
 }
 
 func (gp *GuardPath) Steps(startPose Pose) iter.Seq[Pose] {
 	iMax := len(*gp) - 1
 	jMax := len((*gp)[0]) - 1
-	di, dj := 0, 0
+
 	pose := startPose
 
 	return func(yield func(Pose) bool) {
+		di, dj := 0, 0
 		for {
 			if !yield(pose) {
 				return
