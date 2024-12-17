@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"sync/atomic"
 )
 
 const OBSTACLE, VISITED, LEFT, UP, RIGHT, DOWN = "#", "X", "<", "^", ">", "v"
@@ -29,18 +30,19 @@ func Solve(inputPath string) {
 	prevPose := startPose
 
 	var wg sync.WaitGroup
-	var mu sync.Mutex
-	obstacleCount := 0
+	var obstacleCount int32
 
-	visitedPosition := make(map[Position]bool)
+	visitedPosition := make(map[Position]struct{})
 
 	for pose := range gp.Steps(startPose) {
+		pos := Position{pose.i, pose.j}
+
 		// Part 02 - Do not put an obstacle in the same position twice
-		if visitedPosition[Position{pose.i, pose.j}] {
+		if _, visited := visitedPosition[pos]; visited {
 			continue
 		}
 
-		visitedPosition[Position{pose.i, pose.j}] = true
+		visitedPosition[pos] = struct{}{}
 
 		// Part 02 - Do not put an obstacle on the start position
 		if pose == startPose {
@@ -54,9 +56,7 @@ func Solve(inputPath string) {
 		go func(from Pose) {
 			defer wg.Done()
 			if IsLoop(&blockedPath, from) {
-				mu.Lock()
-				obstacleCount++
-				mu.Unlock()
+				atomic.AddInt32(&obstacleCount, 1)
 			}
 		}(prevPose)
 
@@ -70,12 +70,12 @@ func Solve(inputPath string) {
 }
 
 func IsLoop(gp *GuardPath, startPose Pose) bool {
-	visitedPose := make(map[Pose]bool)
+	visitedPose := make(map[Pose]struct{})
 	for pose := range gp.Steps(startPose) {
-		if visitedPose[pose] {
+		if _, visited := visitedPose[pose]; visited {
 			return true
 		}
-		visitedPose[pose] = true
+		visitedPose[pose] = struct{}{}
 	}
 	return false
 }

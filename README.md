@@ -7,6 +7,23 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 06
+- After learning about *iterators* in Go, I decided to write my own custom iterator for stepping through the map. Very satisfied with the final solution. 
+- Happy that I found the word *pose* to represent both position and direction. I find problems easier to solve when they are named properly. 
+- For part 02 I used *goroutines* for the first time to solve the problem concurrently. Getting it right took some time, because:
+    1. I made unintentional race conditions, reading variables that were written to outside of the goroutine.
+    2. I counted obstacles placed in the same position more than once.
+
+Valuable GPT feedback:
+- Avoid global locks that can cause contention between goroutines. For counting, flags or other operations that update a single value concurrently, the `iter/atomic` package has lock-free methods that can be used instead of a Mutex to reduce overhead.
+- Use an empty struct instead of a boolean to test for presence (`map[Pose]struct{}`). Go does not have native sets, but an empty set occupies **zero bytes** and is a common way of implementing set features.
+Go does not have native sets. The Use an empty struct instead of a bool. The map is used like a Set, but Go does not have that natively.
+- Avoid deep copies if possible. It is expensive in terms of runtime and memory usage. I could perhaps have modified the `IsLoop(...)` function to take the obstacle position as an argument. However, this does not align easily with the iterator method for this problem. I did not implement this suggestion.
+- Consider using a worker pool to limit the number of goroutines. Spawning too many goroutines may lead to memory pressure and bottlenecks. I did not implement this suggestion.
+
+**Inspiration from others**
+- Python: Very elegant use of complex numbers to represent both position and direction ([reddit](https://www.reddit.com/r/adventofcode/comments/1h7tovg/comment/m0o44m5))
+
 ### Day 05
 I am very happy with my solution for today, although the process was a bit convoluted. I spent 2 hours trying to implement what I suddenly realized was and overly complicated and inefficient *sorting algorithm*. I should probably have caught on earlier, considering that I named my variables e.g. `comesBefore` or `comesAfter`. This was a good reminder of thouroughly understanding what type of problem it is before implementing a solution.
 
@@ -53,3 +70,6 @@ Trying out Go for the first time, after completing [A Tour of Go](https://go.dev
 - Errors
     - To create an error with a message, use `fmt.Errorf(...)`
     - Use `panic(...)` with an error message (string) for situations that won't be handled at runtime
+
+- Enums
+    - Not a native feature in Go, but can be implemented using the `iota` keyword - a counter that resets when encountering the `const` keyword. See [yourbasic.org](https://yourbasic.org/golang/iota/) for a practical example.
