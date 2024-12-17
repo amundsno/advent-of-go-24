@@ -9,6 +9,32 @@ import (
 	"strings"
 )
 
+func readToRows(reader io.Reader) ([]string, error) {
+	var rows []string
+	scanner := bufio.NewScanner(reader)
+	for scanner.Scan() {
+		rows = append(rows, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
+
+func ReadFileToRows(inputPath string) []string {
+	file, err := os.Open(inputPath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	content, err := readToRows(file)
+	if err != nil {
+		panic(err)
+	}
+	return content
+}
+
 func readToGrid(reader io.Reader, delimiter string) ([][]string, error) {
 	grid := [][]string{}
 	scanner := bufio.NewScanner(reader)
