@@ -40,3 +40,8 @@ func IterLength[V any](s iter.Seq[V]) int {
 	}
 	return count
 }
+
+// (0, 0) > (i, j) > (iMax, jMax)
+func IsOutOfBounds2D(i, j, iMax, jMax int) bool {
+	return i < 0 || i > iMax || j < 0 || j > jMax
+}

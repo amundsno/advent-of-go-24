@@ -103,7 +103,7 @@ func (gp *GuardPath) Steps(startPose Pose) iter.Seq[Pose] {
 			}
 			for {
 				di, dj = ComputeNextStep(pose.dir)
-				if IsOutOfBounds(pose.i+di, pose.j+dj, iMax, jMax) {
+				if utils.IsOutOfBounds2D(pose.i+di, pose.j+dj, iMax, jMax) {
 					return
 				}
 				if (*gp)[pose.i+di][pose.j+dj] != OBSTACLE {
@@ -136,10 +136,6 @@ func FindStartPose(gp *GuardPath) Pose {
 		}
 	}
 	panic("failed to find start pose")
-}
-
-func IsOutOfBounds(i, j, iMax, jMax int) bool {
-	return i < 0 || i > iMax || j < 0 || j > jMax
 }
 
 func GetNextDirection(dir string) string {
