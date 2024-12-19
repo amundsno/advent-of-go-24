@@ -7,6 +7,9 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 08
+One of my fastest solve times so far. My solution in O(n**2) time. The code is not as modular as I like, but it is simple to understand and works.
+
 ### Day 07
 Recursive depth first search algorithm came easy for today's problem. Made a silly mistake that had me debugging part 02 for a long time. If the target was reached early, I did not consider the remaining chain. This resulted in two of the input rows to return `true` too soon.
 
