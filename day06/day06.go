@@ -25,7 +25,7 @@ type Position struct {
 }
 
 func Solve(inputPath string) {
-	gp := GuardPath(utils.ReadFileToGrid(inputPath, ""))
+	gp := GuardPath(utils.ReadFileTo2D(inputPath, ""))
 	startPose := FindStartPose(&gp)
 	prevPose := startPose
 

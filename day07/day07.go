@@ -8,7 +8,7 @@ import (
 )
 
 func Solve(inputPath string) {
-	rows := utils.ReadFileToRows(inputPath)
+	rows := utils.ReadFileTo1D(inputPath)
 
 	var sumP1, sumP2 int
 	for _, row := range rows {

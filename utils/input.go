@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func readToRows(reader io.Reader) ([]string, error) {
+func readTo1D(reader io.Reader) ([]string, error) {
 	var rows []string
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
@@ -21,21 +21,21 @@ func readToRows(reader io.Reader) ([]string, error) {
 	return rows, nil
 }
 
-func ReadFileToRows(inputPath string) []string {
+func ReadFileTo1D(inputPath string) []string {
 	file, err := os.Open(inputPath)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	content, err := readToRows(file)
+	content, err := readTo1D(file)
 	if err != nil {
 		panic(err)
 	}
 	return content
 }
 
-func readToGrid(reader io.Reader, delimiter string) ([][]string, error) {
+func readTo2D(reader io.Reader, delimiter string) ([][]string, error) {
 	grid := [][]string{}
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
@@ -48,14 +48,14 @@ func readToGrid(reader io.Reader, delimiter string) ([][]string, error) {
 	return grid, nil
 }
 
-func ReadFileToGrid(inputPath, delimiter string) [][]string {
+func ReadFileTo2D(inputPath, delimiter string) [][]string {
 	file, err := os.Open(inputPath)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	content, err := readToGrid(file, delimiter)
+	content, err := readTo2D(file, delimiter)
 	if err != nil {
 		panic(err)
 	}
