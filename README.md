@@ -7,6 +7,15 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 07
+Recursive depth first search algorithm came easy for today's problem. Made a silly mistake that had me debugging part 02 for a long time. If the target was reached early, I did not consider the remaining chain. This resulted in two of the input rows to return `true` too soon.
+
+*Valuable feedback*
+- String splitting with `strings.Fields()` if the separator is whitespace.
+
+*Other*:
+- Compare files in VSCode by right clicking on a file to "Select for Compare", and another to "Compare with Selected" ([source](https://vscode.one/diff-vscode/)).
+
 ### Day 06
 - After learning about *iterators* in Go, I decided to write my own custom iterator for stepping through the map. Very satisfied with the final solution. 
 - Happy that I found the word *pose* to represent both position and direction. I find problems easier to solve when they are named properly. 
