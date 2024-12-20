@@ -1,6 +1,10 @@
 package utils
 
-import "iter"
+import (
+	"fmt"
+	"iter"
+	"strconv"
+)
 
 func SumSlice(slice []int) int {
 	sum := 0
@@ -44,4 +48,23 @@ func IterLength[V any](s iter.Seq[V]) int {
 // (0, 0) > (i, j) > (iMax, jMax)
 func IsOutOfBounds2D(i, j, iMax, jMax int) bool {
 	return i < 0 || i > iMax || j < 0 || j > jMax
+}
+
+func SliceAtoi(s []string) ([]int, error) {
+	is := make([]int, len(s))
+	var err error
+	for i, a := range s {
+		is[i], err = strconv.Atoi(a)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert '%v' to int: %v", a, err)
+		}
+	}
+	return is, nil
+}
+
+func SliceSum(s []int) (sum int) {
+	for _, val := range s {
+		sum += val
+	}
+	return sum
 }
