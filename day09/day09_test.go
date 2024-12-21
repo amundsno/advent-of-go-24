@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestReorder(t *testing.T) {
+func TestReorderBits(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
@@ -17,7 +17,7 @@ func TestReorder(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			blocks := strings.Split(tc.input, "")
-			Reorder(blocks)
+			ReorderBits(blocks)
 
 			expected := strings.Split(tc.expected, "")
 			if !reflect.DeepEqual(blocks, expected) {
@@ -28,7 +28,7 @@ func TestReorder(t *testing.T) {
 	}
 }
 
-func TestParseInput(t *testing.T) {
+func TestParseInputToBits(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
@@ -39,7 +39,7 @@ func TestParseInput(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			blocks := ParseInput(tc.input)
+			blocks := ParseInputToBits(tc.input)
 			if !reflect.DeepEqual(strings.Join(blocks, ""), tc.expected) {
 				t.Errorf("expected: %v, got: %v", tc.expected, blocks)
 			}
@@ -48,7 +48,7 @@ func TestParseInput(t *testing.T) {
 	}
 }
 
-func TestComputeChecksum(t *testing.T) {
+func TestComputeBitChecksum(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
@@ -59,7 +59,7 @@ func TestComputeChecksum(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			blocks := strings.Split(tc.input, "")
-			result := ComputeChecksum(blocks)
+			result := ComputeBitChecksum(blocks)
 			if result != tc.expected {
 				t.Errorf("expected: %v, got: %v", tc.expected, blocks)
 			}

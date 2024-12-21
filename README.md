@@ -7,6 +7,9 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 09
+My final solution for part 02 is inspired by [this comment on Reddit](https://www.reddit.com/r/adventofcode/comments/1ha27bo/comment/m15wwre/). I was on the right track - parsing the input to memory blocks and comparing their sizes - but I got stuck in the complexity of actually moving them around. Because we only care about the final checksum, there is no need to move the memory blocks. Setting the index/position they would have had if they were moved is enough. We can then use sum of a divergent sequence to compute how each memory block contributes to the final checksum.
+
 ### Day 08
 One of my fastest solve times so far. My solution in O(n**2) time. The code is not as modular as I like, but it is simple to understand and works.
 
@@ -85,3 +88,7 @@ Trying out Go for the first time, after completing [A Tour of Go](https://go.dev
 
 - Enums
     - Not a native feature in Go, but can be implemented using the `iota` keyword - a counter that resets when encountering the `const` keyword. See [yourbasic.org](https://yourbasic.org/golang/iota/) for a practical example.
+
+- Type conversion
+    - Iterating over a string, yields a bite or rune for each position. To get the integer value of a byte/rune, subtract `'0'` to offset the ASCII conversion (`int(rune - '0')`)
+    
