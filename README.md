@@ -7,6 +7,15 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 10
+Straight forward recursive depth first search algorithm for both parts of today's problem.
+
+*Valuable feedback:*
+- There is no need for passing pointers to maps, as maps are referenced types.
+- Prefer methods over free functions when logic is tightly coupled to the type.
+- Use *state* or *context* struct variables instead of passing multiple separate arguments to the same function. This improves readability.
+- Try to use more domain specific language for readability. 
+
 ### Day 09
 My final solution for part 02 is inspired by [this comment on Reddit](https://www.reddit.com/r/adventofcode/comments/1ha27bo/comment/m15wwre/). I was on the right track - parsing the input to memory blocks and comparing their sizes - but I got stuck in the complexity of actually moving them around. Because we only care about the final checksum, there is no need to move the memory blocks. Setting the index/position they would have had if they were moved is enough. We can then use sum of a divergent sequence to compute how each memory block contributes to the final checksum.
 
