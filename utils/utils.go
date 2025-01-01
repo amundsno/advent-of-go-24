@@ -62,6 +62,18 @@ func SliceAtoi(s []string) ([]int, error) {
 	return is, nil
 }
 
+func SliceAtoi2D(g [][]string) ([][]int, error) {
+	gInt := make([][]int, len(g))
+	for i, row := range g {
+		rowInt, err := SliceAtoi(row)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert '%v' to ints: %v", row, err)
+		}
+		gInt[i] = rowInt
+	}
+	return gInt, nil
+}
+
 func SliceSum(s []int) (sum int) {
 	for _, val := range s {
 		sum += val
