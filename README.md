@@ -7,6 +7,20 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 11
+Another recursive DFS algorithm, but this time with memoization. The idea is to count the number of leaf nodes after branching N times from the root node (stone). I used a closure to capture the cache variable and improve readability. My final solution is inspired by [this comment on Reddit](https://www.reddit.com/r/adventofcode/comments/1hbm0al/comment/m1i36gs).
+
+It took a while to complete today's problem, because I tried to over-optimize the caching. I wanted to store the number of stones following each blink in a long chain, e.g.: `stone: [countBlink0, countBlink1, countBlink2, ...]`. However, this was harder to reason about and turned out more complex than I imagined to begin with. Thus, I ended up keeping it simple while perhaps doing a bit more computation.
+
+*Valuable feedback:*
+- The `sync.Map` type can be used for concurrent memoization
+- The splitting can be done without converting to strings to make it more efficient. Two methods:
+    1. Use `% 10` to get the last digit and append it to a list of digits, then divide by 10 until the input integer is 0. No need for type conversion, but there is some overhead in performance and memory due to slice manipulation (ChatGPT suggestion).
+    2. Use logarithms to find the number of digits, then divison to get the first part and modulus for the second ([Reddit comment](https://www.reddit.com/r/adventofcode/comments/1hbm0al/comment/m1hez5b)). The only overhead comes from float conversion.
+
+*Other solutions*
+- This [proof-of-concept on Reddit](https://www.reddit.com/r/adventofcode/comments/1hbm0al/comment/m1jblcs/) uses a *state transition matrix* to apply all the blinks in one go. The possible values have to be pre-computed, but it is a very elegant solution. The matrix at point *(i, j)* describes how many stones transition from number *i* to *j* in one step. Raising it to the power of X blinks yields a matrix that describes how many stones transition from *i* to *j* in X blinks. Then taking the dot product between the initial state vector (`[1 for s in stones, else 0]`) and this matrix you get the end state in one step. Very clever!
+
 ### Day 10
 Straight forward recursive depth first search algorithm for both parts of today's problem.
 
@@ -86,6 +100,7 @@ Trying out Go for the first time, after completing [A Tour of Go](https://go.dev
     
 - Slice manipulation
     - On making deep copies. The `copy(dst, src)` function copies only what there is room for in `dst`, meaning size must be preallocated. Instead, one can append the `src` elements to a *nil* slice using the ellipsis `...` operator: `dst := append([]int{}, src... )`
+    - You can append to the beginning of a slice with: `slice = append([]int{value}, slice...)`
     
 - Testing
     - Use table-driven tests with `t.Run(...)` to create subtests
