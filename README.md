@@ -7,6 +7,10 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 12
+- Embedding types https://go.dev/doc/effective_go#embedding to promote methods of embedded types
+- Composition over inheritence
+
 ### Day 11
 Another recursive DFS algorithm, but this time with memoization. The idea is to count the number of leaf nodes after branching N times from the root node (stone). I used a closure to capture the cache variable and improve readability. My final solution is inspired by [this comment on Reddit](https://www.reddit.com/r/adventofcode/comments/1hbm0al/comment/m1i36gs).
 
