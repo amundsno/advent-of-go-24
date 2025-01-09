@@ -8,8 +8,14 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 ## Daily notes
 
 ### Day 12
-- Embedding types https://go.dev/doc/effective_go#embedding to promote methods of embedded types
-- Composition over inheritence
+Part 01 was a pretty straight forward flood fill algorithm. Instead of recursion, I solved it iteratively using a queue. Initially I used counters to have the algorithm return the area and perimeter directly, but I refactored it to return the points within a region instead for the second part. I quickly understood that it would be easier to count the number of corners instead of sides, however finding the exact method of counting took some time. I experimented with operations on the points accross the perimeter, but this turned out to be complex. My final solution is inspired by [this comment on Reddit](https://www.reddit.com/r/adventofcode/comments/1hcdnk0/comment/m1nio0w) although the actual implementation is a little different. Consider each point in the region. It is an outside corner if the point to the N & E (or E & S, S & W, W & N) is not within the region. It is an inside corner if those points are within the region and the diagonal between them are not - i.e. N & E inside, but NE not inside.
+
+*Valuable feedback:*
+- I have to remember that I can iterate over key, value pairs in maps without calling `maps.All(...)`.
+
+*Other solutions*
+- Blown away by [this solution on Reddit](https://www.reddit.com/r/adventofcode/comments/1hcdnk0/comment/m1pb0m7) that uses a kernel / convolution matrix to perform edge detection mathematically. Ingenious. 
+- I appreciate the solutions that use math and complex numbers to navigate the matrix. This is helpful, as multiplying by 1j is the equivalent of rotating 90 degrees clockwise. This is another way of spotting corners.
 
 ### Day 11
 Another recursive DFS algorithm, but this time with memoization. The idea is to count the number of leaf nodes after branching N times from the root node (stone). I used a closure to capture the cache variable and improve readability. My final solution is inspired by [this comment on Reddit](https://www.reddit.com/r/adventofcode/comments/1hbm0al/comment/m1i36gs).
@@ -117,6 +123,11 @@ Trying out Go for the first time, after completing [A Tour of Go](https://go.dev
 - Enums
     - Not a native feature in Go, but can be implemented using the `iota` keyword - a counter that resets when encountering the `const` keyword. See [yourbasic.org](https://yourbasic.org/golang/iota/) for a practical example.
 
+- Global variables
+    - Global variables can be declared with the `var name = ` syntax. 
+
 - Type conversion
     - Iterating over a string, yields a bite or rune for each position. To get the integer value of a byte/rune, subtract `'0'` to offset the ASCII conversion (`int(rune - '0')`)
     
+- Composition over inheritance
+    - Go does not have inheritance; it favours *composition*. You can *embed* a type within a struct by using the type as a field without a name. The embedded type's methods are *promoted* to the outer struct, making them callable directly. This allows us to implement interfaces for a new struct by simply embedding a type that already satisfies that interface ([source](https://go.dev/doc/effective_go#embedding)).

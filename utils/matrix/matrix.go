@@ -1,9 +1,5 @@
 package matrix
 
-import (
-	"advent-of-code/utils"
-)
-
 type Matrix[T any] struct {
 	matrix [][]T
 	n, m   int
@@ -14,9 +10,21 @@ func New[T any](m [][]T) Matrix[T] {
 }
 
 func (m *Matrix[T]) IsInbounds(i, j int) bool {
-	return !utils.IsOutOfBounds2D(i, j, m.n-1, m.m-1)
+	return i >= 0 && i < m.n && j >= 0 && j < m.m
 }
 
 func (m *Matrix[T]) At(i, j int) *T {
 	return &m.matrix[i][j]
+}
+
+func (m *Matrix[T]) Get(i, j int) T {
+	return m.matrix[i][j]
+}
+
+func (m *Matrix[T]) Rows() int {
+	return m.n
+}
+
+func (m *Matrix[T]) Cols() int {
+	return m.m
 }
