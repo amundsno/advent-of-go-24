@@ -7,6 +7,9 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 13
+Textbook dynamic programming problem.
+
 ### Day 12
 Part 01 was a pretty straight forward flood fill algorithm. Instead of recursion, I solved it iteratively using a queue. Initially I used counters to have the algorithm return the area and perimeter directly, but I refactored it to return the points within a region instead for the second part. I quickly understood that it would be easier to count the number of corners instead of sides, however finding the exact method of counting took some time. I experimented with operations on the points accross the perimeter, but this turned out to be complex. My final solution is inspired by [this comment on Reddit](https://www.reddit.com/r/adventofcode/comments/1hcdnk0/comment/m1nio0w) although the actual implementation is a little different. Consider each point in the region. It is an outside corner if the point to the N & E (or E & S, S & W, W & N) is not within the region. It is an inside corner if those points are within the region and the diagonal between them are not - i.e. N & E inside, but NE not inside.
 
