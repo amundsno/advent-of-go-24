@@ -8,7 +8,13 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 ## Daily notes
 
 ### Day 13
-Textbook dynamic programming problem.
+The wording of this problem lead me to believe this was a textbook dynamic programming problem. I solved part 01 that way, but quickly caught on that this was indeed a system of linear equations that could be solved using linear algebra. All the problems in my input had buttons that were linearly independent, meaning that there will be a unique solution and no need for optimization. However, if the buttons were linearly dependent, there might be many solutions to the problem, but a unique optimal solution might still exist. 
+
+Consider a claw machine with A=[1, 1], B=[2, 2] and T=[5, 5]. Even though A and B are linearly dependent, the optimal solution is pressing B 2 times and A 1 time.
+
+It bothers me that I was not able to find a way to solve this mathematically. It is not as simple as maximizing the number of times we press the cheaper B button, because pressing A might be more cost efficient in terms of moving us to the target fewer steps. Even if we figure out which button is most cost efficient in terms of translation towards the target, we can't naivly maximize this either. Say that B is more cost efficient than A, the question remains: what is the fewest amount of times I can press A (N) such that `bx % (tx - N*ax) == 0`. I can't see a way of solving this without iterating through N = 0, 1, 2, etc.
+
+Apart from this, I got to review both dynamic programming and linear algebra, which felt good.
 
 ### Day 12
 Part 01 was a pretty straight forward flood fill algorithm. Instead of recursion, I solved it iteratively using a queue. Initially I used counters to have the algorithm return the area and perimeter directly, but I refactored it to return the points within a region instead for the second part. I quickly understood that it would be easier to count the number of corners instead of sides, however finding the exact method of counting took some time. I experimented with operations on the points accross the perimeter, but this turned out to be complex. My final solution is inspired by [this comment on Reddit](https://www.reddit.com/r/adventofcode/comments/1hcdnk0/comment/m1nio0w) although the actual implementation is a little different. Consider each point in the region. It is an outside corner if the point to the N & E (or E & S, S & W, W & N) is not within the region. It is an inside corner if those points are within the region and the diagonal between them are not - i.e. N & E inside, but NE not inside.

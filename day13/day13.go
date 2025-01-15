@@ -9,7 +9,7 @@ import (
 
 const PRICE_A, PRICE_B = 3, 1
 
-func Solve(inputPath string) {
+func SolvePart01(inputPath string) {
 	machines := ParseInput(inputPath)
 
 	sum := 0
@@ -19,13 +19,58 @@ func Solve(inputPath string) {
 			depthA: 0,
 			depthB: 0,
 		}
-		cost := MinCostToPrice(m.Target, m.ButtonA, m.ButtonB, ctx)
+		cost := MinCostToPriceDynamic(m.Target, m.ButtonA, m.ButtonB, ctx)
 		if cost >= 0 {
 			sum += cost
 		}
 	}
 
 	fmt.Printf("Part 01: %v (minimum cost to reach all prizes)\n", sum)
+}
+
+func SolvePart02(inputPath string) {
+	machines := ParseInput(inputPath)
+
+	sum := 0
+	for _, m := range machines {
+		m.Target.x += 10000000000000
+		m.Target.y += 10000000000000
+		cost := CostToPriceLinAlg(m)
+		if cost >= 0 {
+			sum += cost
+		}
+	}
+	fmt.Printf("Part 02: %v (minimum cost to reach all prizes)\n", sum)
+}
+
+// Use linear algebra to find the number of times to press the A & B button, then compute the cost
+func CostToPriceLinAlg(cm ClawMachine) int {
+	// NB! This only works if A & B are linearly independent!
+	// There might be solutions, even if A & B are linearly dependent
+	// E.g. A=[1,1], B=[2,2] and the target is (5, 5).
+	// The cheapest way to reach the target is pressing B 2 times and A 1 time.
+	// I could not figure out how to solve this with linear algebra
+
+	// All problems in my input had linearly independent A & B buttons, meaning there will be exactly one unique solution.
+	// The number of times to press the A & B button can be formulated as a matrix equation: Mx = t,
+	// where the columns in M describes the translation by pressing each button, and t is the target.
+	// There will be a unique solution when the determinant of M (det) != 0.
+
+	ax, ay := cm.ButtonA.x, cm.ButtonA.y
+	bx, by := cm.ButtonB.x, cm.ButtonB.y
+	tx, ty := cm.Target.x, cm.Target.y
+
+	// Determinant
+	det := ax*by - bx*ay
+
+	aTimesDet := tx*by - ty*bx
+	bTimesDet := ty*ax - tx*ay
+
+	if aTimesDet%det == 0 && bTimesDet%det == 0 {
+		return PRICE_A*(aTimesDet/det) + PRICE_B*(bTimesDet/det)
+	}
+
+	return -1
 }
 
 type ClawMachine struct {
@@ -68,7 +113,8 @@ type RecursionContext struct {
 	depthA, depthB int
 }
 
-func MinCostToPrice(target, a, b Point, ctx RecursionContext) int {
+// Use dynamic programming to find the cheapest way to reach the target
+func MinCostToPriceDynamic(target, a, b Point, ctx RecursionContext) int {
 	if ctx.depthA > 100 || ctx.depthB > 100 {
 		return -1
 	}
@@ -84,8 +130,8 @@ func MinCostToPrice(target, a, b Point, ctx RecursionContext) int {
 		return 0
 	}
 
-	costPathA := MinCostToPrice(target.Minus(a), a, b, RecursionContext{ctx.memo, ctx.depthA + 1, ctx.depthB})
-	costPathB := MinCostToPrice(target.Minus(b), a, b, RecursionContext{ctx.memo, ctx.depthA, ctx.depthB + 1})
+	costPathA := MinCostToPriceDynamic(target.Minus(a), a, b, RecursionContext{ctx.memo, ctx.depthA + 1, ctx.depthB})
+	costPathB := MinCostToPriceDynamic(target.Minus(b), a, b, RecursionContext{ctx.memo, ctx.depthA, ctx.depthB + 1})
 
 	var cost int
 	if costPathA < 0 && costPathB < 0 {
