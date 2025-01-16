@@ -77,4 +77,5 @@ if __name__ == "__main__":
     print(cost_to_price((4, 4, 3, 3, 5, 5))) # Should not be possible
     print(cost_to_price((1,1, 2,2, 5,5))) # Should be optimal with 1*A + 2*B = 5 tokens
     print(cost_to_price((7, 7, 2, 2, 20, 20))) # Should be optimal with 2*A + 3*B = 9 tokens
+    print(cost_to_price((4, 4, 3, 3, 14, 14))) # Should be optimal with 2*A + 2*B = 8 tokens
     
