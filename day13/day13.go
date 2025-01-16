@@ -46,15 +46,7 @@ func SolvePart02(inputPath string) {
 // Use linear algebra to find the number of times to press the A & B button, then compute the cost
 func CostToPriceLinAlg(cm ClawMachine) int {
 	// NB! This only works if A & B are linearly independent!
-	// There might be solutions, even if A & B are linearly dependent
-	// E.g. A=[1,1], B=[2,2] and the target is (5, 5).
-	// The cheapest way to reach the target is pressing B 2 times and A 1 time.
-	// I could not figure out how to solve this with linear algebra
-
-	// All problems in my input had linearly independent A & B buttons, meaning there will be exactly one unique solution.
-	// The number of times to press the A & B button can be formulated as a matrix equation: Mx = t,
-	// where the columns in M describes the translation by pressing each button, and t is the target.
-	// There will be a unique solution when the determinant of M (det) != 0.
+	// There might be solutions, even if A & B are linearly dependent.
 
 	ax, ay := cm.ButtonA.x, cm.ButtonA.y
 	bx, by := cm.ButtonB.x, cm.ButtonB.y

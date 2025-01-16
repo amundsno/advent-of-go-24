@@ -8,13 +8,21 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 ## Daily notes
 
 ### Day 13
-The wording of this problem lead me to believe this was a textbook dynamic programming problem. I solved part 01 that way, but quickly caught on that this was indeed a system of linear equations that could be solved using linear algebra. All the problems in my input had buttons that were linearly independent, meaning that there will be a unique solution and no need for optimization. However, if the buttons were linearly dependent, there might be many solutions to the problem, but a unique optimal solution might still exist. 
+The wording of this problem lead me to believe that this was a textbook dynamic programming problem. I solved part 01 that way, but quickly caught on that this was indeed a system of linear equations that could be solved using linear algebra. All the claw machines in the problem input had buttons that were linearly independent, meaning that there will be only one possible solution for how many times to press each button. However, if we consider a hypothetical case where the buttons had been linearly dependent, there could still have been a unique optimal solution to the problem.
 
-Consider a claw machine with A=[1, 1], B=[2, 2] and T=[5, 5]. Even though A and B are linearly dependent, the optimal solution is pressing B 2 times and A 1 time.
+Consider the following hypothetical problems:
 
-It bothers me that I was not able to find a way to solve this mathematically. It is not as simple as maximizing the number of times we press the cheaper B button, because pressing A might be more cost efficient in terms of moving us to the target fewer steps. Even if we figure out which button is most cost efficient in terms of translation towards the target, we can't naivly maximize this either. Say that B is more cost efficient than A, the question remains: what is the fewest amount of times I can press A (N) such that `bx % (tx - N*ax) == 0`. I can't see a way of solving this without iterating through N = 0, 1, 2, etc.
+1. A=[1, 1], B=[2, 2] and T=[5, 5]. Even though A and B are linearly dependent, the optimal solution is pressing B 2 times and A 1 time for a cost of 5 tokens.
+2. A=[7 7], B=[2, 2] and T=[20, 20]. In this case, pressing A is more cost efficient than B, and the optimal solution is pressing A 2 times and B 3 times for a cost of 9 tokens.
+3. A=[4, 4], B=[3, 3] and T=[14, 14]. Here pressing A 2 times and B 2 times give the optimal solution of 8 tokens.
 
-Apart from this, I got to review both dynamic programming and linear algebra, which felt good.
+Note that it is not a matter of simply pressing the most cost efficient button as much as possible without exceeding the target. If we had done that for the third problem above, we would have pressed B 4 times to end up at (12, 12). There is no way to reach the target from (12, 12) without backtracking to pressing B 2 times, followed by A 2 times.
+
+Turns out we can use Linear Diophantine Equations and The Euclidian Algorithm to find the (A, B) pair which minimize the cost mathematically - i.e. we do not have to iterate through all valid (A, B) pairs to find the minimal cost.
+
+I made a [post on Reddit](https://www.reddit.com/r/adventofcode/comments/1i20wpg) to explain the solution in more detail.
+
+Apart from this, I got to review both dynamic programming and some linear algebra, which felt good.
 
 ### Day 12
 Part 01 was a pretty straight forward flood fill algorithm. Instead of recursion, I solved it iteratively using a queue. Initially I used counters to have the algorithm return the area and perimeter directly, but I refactored it to return the points within a region instead for the second part. I quickly understood that it would be easier to count the number of corners instead of sides, however finding the exact method of counting took some time. I experimented with operations on the points accross the perimeter, but this turned out to be complex. My final solution is inspired by [this comment on Reddit](https://www.reddit.com/r/adventofcode/comments/1hcdnk0/comment/m1nio0w) although the actual implementation is a little different. Consider each point in the region. It is an outside corner if the point to the N & E (or E & S, S & W, W & N) is not within the region. It is an inside corner if those points are within the region and the diagonal between them are not - i.e. N & E inside, but NE not inside.
