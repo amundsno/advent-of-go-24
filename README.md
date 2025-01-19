@@ -7,6 +7,9 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 14
+Go implements the modulo (%) operator different than Python. In Python, the remainder is chosen to be the smallest *positive* number `r` that satisfies `a = qb + r, q=a/b, abs(r) < abs(n)`. In Go, the remainder is chosen to be the smallest number with the same sign as the dividend `a`. To get Python-like behaviour in Go, we can add the divisor to the result and do another modulo to always make it positive: `((a % b) + b) % b`.
+
 ### Day 13
 The wording of this problem lead me to believe that this was a textbook dynamic programming problem. I solved part 01 that way, but quickly caught on that this was indeed a system of linear equations that could be solved using linear algebra. All the claw machines in the problem input had buttons that were linearly independent, meaning that there will be only one possible solution for how many times to press each button. However, if we consider a hypothetical case where the buttons had been linearly dependent, there could still have been a unique optimal solution to the problem.
 
