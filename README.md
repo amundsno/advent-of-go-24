@@ -7,6 +7,9 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 15
+I feel like all the practise with recursive solutions are paying off. Very happy with my intuition and solution for today.
+
 ### Day 14
 Go implements the modulo (%) operator different than Python. In Python, the remainder is chosen to be the smallest *positive* number `r` that satisfies `a = qb + r, q=a/b, abs(r) < abs(n)`. In Go, the remainder is chosen to be the smallest number with the same sign as the dividend `a`. To get Python-like behaviour in Go, we can add the divisor to the result and do another modulo to always make it positive: `((a % b) + b) % b`.
 

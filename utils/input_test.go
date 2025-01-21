@@ -65,7 +65,7 @@ func TestReadToMap(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			reader := strings.NewReader(tc.input)
-			result, err := readToMap(reader, tc.delimiter)
+			result, err := ReadToMap(reader, tc.delimiter)
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}

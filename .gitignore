@@ -28,5 +28,5 @@ go.work.sum
 .vscode
 
 sandbox.go
-**/input.txt
-**/sample.txt
+**/input*.txt
+**/sample*.txt

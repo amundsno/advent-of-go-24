@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func readTo1D(reader io.Reader) ([]string, error) {
+func ReadTo1D(reader io.Reader) ([]string, error) {
 	var rows []string
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
@@ -28,14 +28,14 @@ func ReadFileTo1D(inputPath string) []string {
 	}
 	defer file.Close()
 
-	content, err := readTo1D(file)
+	content, err := ReadTo1D(file)
 	if err != nil {
 		panic(err)
 	}
 	return content
 }
 
-func readTo2D(reader io.Reader, delimiter string) ([][]string, error) {
+func ReadTo2D(reader io.Reader, delimiter string) ([][]string, error) {
 	grid := [][]string{}
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
@@ -55,7 +55,7 @@ func ReadFileTo2D(inputPath, delimiter string) [][]string {
 	}
 	defer file.Close()
 
-	content, err := readTo2D(file, delimiter)
+	content, err := ReadTo2D(file, delimiter)
 	if err != nil {
 		panic(err)
 	}
@@ -112,7 +112,7 @@ func ReadFileToString(inputPath string) string {
 	return content
 }
 
-func readToMap(reader io.Reader, delimiter string) (map[int]map[int]string, error) {
+func ReadToMap(reader io.Reader, delimiter string) (map[int]map[int]string, error) {
 	m := make(map[int]map[int]string)
 	scanner := bufio.NewScanner(reader)
 	iRow := -1
@@ -140,7 +140,7 @@ func ReadFileToMap(inputPath, delimiter string) map[int]map[int]string {
 	}
 	defer file.Close()
 
-	content, err := readToMap(file, delimiter)
+	content, err := ReadToMap(file, delimiter)
 	if err != nil {
 		panic(err)
 	}

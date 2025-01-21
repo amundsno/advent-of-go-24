@@ -21,6 +21,14 @@ func (m *Matrix[T]) Get(i, j int) T {
 	return m.matrix[i][j]
 }
 
+func (m *Matrix[T]) Set(i, j int, t T) {
+	m.matrix[i][j] = t
+}
+
+func (m *Matrix[T]) Row(i int) []T {
+	return m.matrix[i]
+}
+
 func (m *Matrix[T]) Rows() int {
 	return m.n
 }
