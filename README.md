@@ -8,7 +8,7 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 ## Daily notes
 
 ### Day 15
-I feel like all the practise with recursive solutions are paying off. Very happy with my intuition and solution for today.
+I feel like all the practise with recursive solutions are paying off. Very happy with my intuition and solution for today. Visualizing the recursion as a tree really helps in designing the algorithm. Returning a handler to perform the move if possible feels clever, but might not be the most efficient or readable solution. I'll see if I can improve it.
 
 ### Day 14
 Go implements the modulo (%) operator different than Python. In Python, the remainder is chosen to be the smallest *positive* number `r` that satisfies `a = qb + r, q=a/b, abs(r) < abs(n)`. In Go, the remainder is chosen to be the smallest number with the same sign as the dividend `a`. To get Python-like behaviour in Go, we can add the divisor to the result and do another modulo to always make it positive: `((a % b) + b) % b`.
