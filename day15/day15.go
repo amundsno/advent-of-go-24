@@ -37,21 +37,83 @@ func ParseDirection(symbol rune) Vec2D {
 	panic("could not parse direction")
 }
 
-func (g *Grid) Move(pos, dir Vec2D) bool {
-	sym := g.Get(pos.y, pos.x)
-	if sym == SPACE {
-		return true
-	}
-	if sym == WALL {
-		return false
+func (g Grid) LinkTiles(pos, dir Vec2D) map[Vec2D]string {
+	tiles := make(map[Vec2D]string)
+
+	var linkFrom func(Vec2D)
+	linkFrom = func(p Vec2D) {
+		if _, visited := tiles[p]; visited {
+			return
+		}
+		sym := g.Get(p.y, p.x)
+		if sym == SPACE || sym == WALL {
+			return
+		}
+
+		tiles[p] = sym
+		linkFrom(p.Add(dir))
+
+		if sym == BOX_LEFT {
+			linkFrom(p.Add(RIGHT))
+		} else if sym == BOX_RIGHT {
+			linkFrom(p.Add(LEFT))
+		}
 	}
 
-	next := pos.Add(dir)
-	if g.Move(next, dir) {
-		g.Set(next.y, next.x, sym)
-		return true
+	linkFrom(pos)
+	return tiles
+}
+
+func (g Grid) CanMove(tiles map[Vec2D]string, dir Vec2D) bool {
+	for pos := range tiles {
+		nextPos := pos.Add(dir)
+		if g.Get(nextPos.y, nextPos.x) == WALL {
+			return false
+		}
 	}
-	return false
+	return true
+}
+
+func (g *Grid) Move(tiles map[Vec2D]string, dir Vec2D) {
+	modifiedTiles := map[Vec2D]struct{}{}
+
+	for pos, sym := range tiles {
+		nextPos := pos.Add(dir)
+		g.Set(nextPos.y, nextPos.x, sym)
+		modifiedTiles[nextPos] = struct{}{}
+	}
+
+	for pos := range tiles {
+		if _, modified := modifiedTiles[pos]; !modified {
+			g.Set(pos.y, pos.x, SPACE)
+		}
+	}
+}
+
+func SolveAlternative(inputPath string) {
+	grid, moves := parseFileInput(inputPath)
+	grid = DoubleGrid(grid)
+	pos := grid.StartPosition()
+
+	// r := bufio.NewReader(os.Stdin)
+
+	for _, move := range moves {
+		dir := ParseDirection(move)
+		tiles := grid.LinkTiles(pos, dir)
+		// Debugging
+		// fmt.Println(grid)
+		// fmt.Println("Next move: ", string(move))
+		// fmt.Println("Linked tiles: ", tiles)
+		// fmt.Println("Can move?: ", grid.CanMove(tiles, dir))
+		// r.ReadString('\n')
+
+		if grid.CanMove(tiles, dir) {
+			grid.Move(tiles, dir)
+			pos = pos.Add(dir)
+		}
+
+	}
+	fmt.Printf("Alternative: %v\n", grid.SumGpsCoordinates())
 }
 
 func (g *Grid) GetMoveHandler(pos, dir Vec2D, memo map[Vec2D]struct{}) func() {
@@ -83,6 +145,7 @@ func (g *Grid) GetMoveHandler(pos, dir Vec2D, memo map[Vec2D]struct{}) func() {
 		}
 	}
 
+	// Part 2
 	posLinked := pos.Add(RIGHT)
 	if sym == BOX_RIGHT {
 		posLinked = pos.Add(LEFT)
@@ -182,14 +245,14 @@ func SolvePart01(inputPath string) {
 		// fmt.Println(dir)
 		// r.ReadString('\n')
 
-		if grid.Move(pos, dir) {
-			grid.Set(pos.y, pos.x, SPACE)
+		moveHandler := grid.GetMoveHandler(pos, dir, make(map[Vec2D]struct{}))
+		if moveHandler != nil {
+			moveHandler()
 			pos = pos.Add(dir)
 		}
 	}
 
 	fmt.Printf("Part 01: %v\n", grid.SumGpsCoordinates())
-	// fmt.Println(grid)
 }
 
 func (g *Grid) DoMove(pos, dir Vec2D) {
@@ -222,5 +285,4 @@ func SolvePart02(inputPath string) {
 		}
 	}
 	fmt.Printf("Part 02: %v\n", grid.SumGpsCoordinates())
-	// fmt.Println(grid)
 }
