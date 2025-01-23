@@ -1,9 +1,8 @@
 package main
 
-import "advent-of-code/day15"
+import "advent-of-code/day16"
 
 func main() {
-	// day15.SolvePart01("../day15/input.txt")
-	// day15.SolvePart02("../day15/input.txt")
-	day15.SolveAlternative("../day15/input.txt")
+	// 155528 too high
+	day16.Solve("../day16/input.txt")
 }
