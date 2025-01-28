@@ -2,12 +2,13 @@ package day16
 
 import (
 	"advent-of-code/utils"
-	"advent-of-code/utils/collections"
 	"advent-of-code/utils/matrix"
 	"fmt"
+
+	"github.com/oleiade/lane/v2"
 )
 
-type Grid struct {
+type Maze struct {
 	*matrix.Matrix[string]
 }
 
@@ -27,20 +28,31 @@ func (v Vec2D) TurnLeft() Vec2D {
 	return Vec2D{v.y, -v.x}
 }
 
-const WALL, SPACE, START, END string = "#", ".", "S", "E"
-
-var EAST, SOUTH, WEST, NORTH Vec2D = Vec2D{1, 0}, Vec2D{0, 1}, Vec2D{-1, 0}, Vec2D{0, -1}
-
-func parseInput(inputPath string) Grid {
-	slice := utils.ReadFileTo2D(inputPath, "")
-	m := matrix.New(slice)
-	return Grid{&m}
+type Pose struct {
+	pos, dir Vec2D
 }
 
-func (g Grid) StartPosition() Vec2D {
-	for y := range g.Rows() {
-		for x := range g.Cols() {
-			if g.Get(y, x) == START {
+func (p Pose) StepForward() Pose {
+	return Pose{p.pos.Add(p.dir), p.dir}
+}
+
+func (p Pose) StepRight() Pose {
+	return Pose{p.pos.Add(p.dir.TurnRight()), p.dir.TurnRight()}
+}
+
+func (p Pose) StepLeft() Pose {
+	return Pose{p.pos.Add(p.dir.TurnLeft()), p.dir.TurnLeft()}
+}
+
+const WALL, START, END string = "#", "S", "E"
+
+var EAST = Vec2D{1, 0}
+
+func (m Maze) startPosition() Vec2D {
+	// Iterate from bottom left corner
+	for y := m.Rows() - 2; y >= 0; y-- {
+		for x := 1; x < m.Cols(); x++ {
+			if m.Get(y, x) == START {
 				return Vec2D{x, y}
 			}
 		}
@@ -48,68 +60,91 @@ func (g Grid) StartPosition() Vec2D {
 	panic("could not find start position")
 }
 
-type Step struct {
-	pos, dir Vec2D
-	score    int
+func parseInput(inputPath string) Maze {
+	slice := utils.ReadFileTo2D(inputPath, "")
+	m := matrix.New(slice)
+	return Maze{&m}
 }
 
-// BFS Flood Fill
-// By queuing the turn itself as a step, we ensure that the first to reach the target
-// is in the least amount of steps and turns. NB! There might be more than one path that is best.
-// Might be possible if the memo included direction?
-// Just memoize the whole step? No... Minus the score
-// New struct pose{pos, dir}, score int
-// memo[pos, dir.flip()] - i.e. if visited before in the other direction
-// But then we need another memo for the points?
+// Dijkstra (BFS with min priority queue) to explore paths from S to E that minimize the score
+func (m Maze) Explore() (seen map[Pose]int, minScore int) {
+	seen = make(map[Pose]int)
+	todo := lane.NewMinPriorityQueue[Pose, int]()
 
-// Or just count the number of tiles traversed as well?
+	start := m.startPosition()
+	todo.Push(Pose{start, EAST}, 0)
 
-// Or extend the memo to include the whole step object
-// Then create a function to reverse the memo from the END
-// Try the different directions, if it exist in the memo, the step is valid
-// DFS apporach for the reverse, use another memo to see if a position has been counted already
-func (g Grid) MinScore(start Vec2D) int {
-	memo := make(map[Vec2D]int)
+	minScore = -1
+	for todo.Size() > 0 {
+		pose, score, ok := todo.Pop()
+		if !ok {
+			panic("could not reach the end")
+		}
 
-	todo := collections.Queue[Step]{}
-	todo.Enqueue(Step{start, EAST, 0})
-
-	minScore := -1
-	for todo.Len() > 0 {
-		step := todo.Dequeue()
-		pos, dir, score := step.pos, step.dir, step.score
-		symbol := g.Get(pos.y, pos.x)
-
-		if prevScore, visited := memo[pos]; (visited && prevScore < score) ||
+		symbol := m.Get(pose.pos.y, pose.pos.x)
+		if prevScore, visited := seen[pose]; (visited && prevScore <= score) ||
 			symbol == WALL ||
-			(minScore > 0 && score >= minScore) {
+			(minScore > 0 && score > minScore) {
 			continue
 		}
 
-		if symbol == END {
-			if minScore < 0 || score < minScore {
-				minScore = score
-			}
+		seen[pose] = score
+
+		if symbol == END && (minScore < 0 || score < minScore) {
+			minScore = score
 			continue
 		}
 
-		memo[pos] = score
-
-		todo.Enqueue(Step{pos.Add(dir), dir, score + 1})
-		todo.Enqueue(Step{pos.Add(dir.TurnRight()), dir.TurnRight(), score + 1001})
-		todo.Enqueue(Step{pos.Add(dir.TurnLeft()), dir.TurnLeft(), score + 1001})
+		todo.Push(pose.StepForward(), score+1)
+		todo.Push(pose.StepRight(), score+1001)
+		todo.Push(pose.StepLeft(), score+1001)
 	}
 	if minScore < 0 {
 		panic("could not reach the end")
 	}
-	return minScore
+	return seen, minScore
+}
+
+// Recursive DFS on the paths explored by Dijkstra to return tiles on a path which minimize the score
+func (m Maze) BestTiles(seen map[Pose]int) map[Vec2D]struct{} {
+	start := m.startPosition()
+	tiles := make(map[Vec2D]struct{})
+
+	var trace func(Pose, int) bool
+	trace = func(pose Pose, score int) bool {
+		if seenScore, exist := seen[pose]; !exist || seenScore != score {
+			return false
+		}
+		if m.Get(pose.pos.y, pose.pos.x) == END {
+			tiles[pose.pos] = struct{}{}
+			return true
+		}
+
+		next := []bool{
+			trace(pose.StepForward(), score+1),
+			trace(pose.StepLeft(), score+1001),
+			trace(pose.StepRight(), score+1001),
+		}
+
+		for _, b := range next {
+			if b {
+				tiles[pose.pos] = struct{}{}
+				return true
+			}
+		}
+		return false
+	}
+	trace(Pose{start, EAST}, 0)
+
+	return tiles
 }
 
 func Solve(inputPath string) {
-	grid := parseInput(inputPath)
-	start := grid.StartPosition()
+	maze := parseInput(inputPath)
 
-	minPoints := grid.MinScore(start)
-	fmt.Printf("Part 01: %v\n", minPoints)
+	seen, score := maze.Explore()
+	tiles := maze.BestTiles(seen)
 
+	fmt.Printf("Part 01: %v\n", score)
+	fmt.Printf("Part 02: %v\n", len(tiles))
 }

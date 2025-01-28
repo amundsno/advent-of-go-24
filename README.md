@@ -7,6 +7,15 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 16
+The first part use Dijkstra (BFS with min priority queue) to explore paths from S to E that minimize the score. The second part use recursive DFS on the paths explored by Dijkstra to return tiles on a path which minimize the score.
+
+Happy with my final solution, although it took some time to arrive at. I spent a lot of time making things more complex than they had to be, trying to optimize too soon.
+
+*Other solutions*
+- [This Python solution](https://www.reddit.com/r/adventofcode/comments/1hfboft/comment/m2bcfmq) solves both parts in the same loop by storing the entire path traversed so far for each step in Dijkstra. The paths that reach the end are added to a set, such that only unique tiles remain. I consider it elegant in terms of being easy to reason about, but perhaps not so memory efficient.
+- [This Rust solution](https://www.reddit.com/r/adventofcode/comments/1hfboft/comment/m2bk6i4) uses the same ideas as mine. However, it uses a bucket queue instead of a min priority queue (heap) to optimize further. Could be interesting to read more about this.
+
 ### Day 15
 I feel like all the practise with recursive solutions are paying off! Very happy with my intuition and solution for today. Visualizing the recursion as a tree really helps in designing the algorithm.
 
