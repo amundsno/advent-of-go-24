@@ -7,8 +7,8 @@ import (
 )
 
 type Computer struct {
-	A, B, C, ip  int
-	program, out []int
+	A, B, C         int
+	program, output []int
 }
 
 func (c Computer) combo(operand int) int {
@@ -26,81 +26,42 @@ func (c Computer) combo(operand int) int {
 	}
 }
 
-func (c *Computer) execute(opcode, operand int) {
-	switch opcode {
+func (c *Computer) execute(code, operand int) {
+	// Case 3 is only used to loop back to start
+	switch code {
 	case 0:
-		c.adv(operand)
+		c.A = c.A >> c.combo(operand)
 	case 1:
-		c.bxl(operand)
+		c.B = c.B ^ operand
 	case 2:
-		c.bst(operand)
-	case 3:
-		c.jnz(operand)
+		c.B = c.combo(operand) % 8
 	case 4:
-		c.bxc()
+		c.B = c.B ^ c.C
 	case 5:
-		c.ut(operand)
+		c.output = append(c.output, c.combo(operand)%8)
 	case 6:
-		c.bdv(operand)
+		c.B = c.A >> c.combo(operand)
 	case 7:
-		c.cdv(operand)
+		c.C = c.A >> c.combo(operand)
 	}
 }
 
-func (c Computer) dv(operand int) int {
-	pow := c.combo(operand) - 1
-	if pow < 0 {
-		return c.A / (2 >> -pow)
+func (c *Computer) sweep() {
+	for i := 0; i < len(c.program); i += 2 {
+		code, operand := c.program[i], c.program[i+1]
+		c.execute(code, operand)
 	}
-	return c.A / (2 << pow)
-}
-
-func (c *Computer) adv(operand int) {
-	c.A = c.dv(operand)
-}
-
-func (c *Computer) bxl(operand int) {
-	c.B = c.B ^ operand
-}
-
-func (c *Computer) bst(operand int) {
-	c.B = c.combo(operand) % 8
-}
-
-func (c *Computer) jnz(operand int) {
-	if c.A != 0 && c.ip != operand {
-		c.ip = operand - 2
-	}
-}
-
-func (c *Computer) bxc() {
-	c.B = c.B ^ c.C
-}
-
-func (c *Computer) ut(operand int) {
-	c.out = append(c.out, c.combo(operand)%8)
-}
-
-func (c *Computer) bdv(operand int) {
-	c.B = c.dv(operand)
-}
-
-func (c *Computer) cdv(operand int) {
-	c.C = c.dv(operand)
 }
 
 func (c *Computer) run() {
-	for c.ip < len(c.program) {
-		opcode := c.program[c.ip]
-		operand := c.program[c.ip+1]
-		c.execute(opcode, operand)
-		c.ip += 2
+	for c.A > 0 {
+		c.sweep()
 	}
 }
 
-func (c Computer) output() string {
-	outStr := make([]string, len(c.out))
-	for i, val := range c.out {
+func (c Computer) String() string {
+	outStr := make([]string, len(c.output))
+	for i, val := range c.output {
 		outStr[i] = strconv.Itoa(val)
 	}
 	return strings.Join(outStr, ",")
@@ -110,12 +71,9 @@ func Solve() {
 	// Initialize manually
 	computer := Computer{
 		A:       0,
-		B:       0,
-		C:       0,
-		ip:      0,
 		program: []int{0},
 	}
 
 	computer.run()
-	fmt.Printf("Part 01: %v\n", computer.output())
+	fmt.Printf("Part 01: %v\n", computer)
 }
