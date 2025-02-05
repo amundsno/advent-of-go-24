@@ -7,6 +7,9 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 19
+Part 01 - straight forward memoized DFS recursion.
+
 ### Day 18
 Surprisingly straight forward compared to previous days. Part 01 was a standard Dijkstra (BFS with min-priority queue). For part 02 i implemented a binary search to speed up the search, but it can also be solved using brute force in a matter of seconds.
 
