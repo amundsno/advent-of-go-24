@@ -7,6 +7,9 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 18
+Surprisingly straight forward compared to previous days. Part 01 was a standard Dijkstra (BFS with min-priority queue). For part 02 i implemented a binary search to speed up the search, but it can also be solved using brute force in a matter of seconds.
+
 ### Day 17
 Today turned out to be a recursion problem as well, but of a kind I have not seen before. Two key insights from [this Reddit comment](https://www.reddit.com/r/adventofcode/comments/1hg38ah/comment/m2gizvj) helped me solve it on my own:
 1. Only the A registry is carried over each iteration. The B and C regestries are reset.

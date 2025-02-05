@@ -34,7 +34,7 @@ func (s Space) MinSteps() int {
 	for todo.Size() > 0 {
 		pos, dist, ok := todo.Pop()
 		if !ok {
-			panic("could not reach the end")
+			return -1
 		}
 
 		if pos.x == MAXPOS && pos.y == MAXPOS {
@@ -53,26 +53,52 @@ func (s Space) MinSteps() int {
 			todo.Push(pos.Add(dir), dist+1)
 		}
 	}
-	panic("could not reach the end")
+	return -1
 }
 
-func ParseInput(filepath string, nRows int) Space {
-	space := make(Space)
+func ParseInput(filepath string) []Vec2D {
 	rowsStr := utils.ReadFileTo2D(filepath, ",")
 	rows, _ := utils.SliceAtoi2D(rowsStr)
+
+	noGoPos := make([]Vec2D, len(rows))
 	for i, row := range rows {
-		space[Vec2D{row[0], row[1]}] = struct{}{}
-		if i > 0 && i+1 == nRows {
-			break
-		}
+		noGoPos[i] = Vec2D{row[0], row[1]}
+	}
+	return noGoPos
+}
+
+func NewSpace(noGo []Vec2D) Space {
+	space := make(Space)
+	for _, pos := range noGo {
+		space[pos] = struct{}{}
 	}
 	return space
 }
 
-const MAXPOS int = 70
+// Binary search to find the first position that would block
+// a path to the exit
+func FirstBlockPosition(noGoPos []Vec2D) Vec2D {
+	lower, upper := BASE, len(noGoPos)-1
+
+	for lower < upper-1 {
+		i := lower + (upper-lower)/2
+		space := NewSpace(noGoPos[:i])
+
+		if space.MinSteps() < 0 {
+			upper = i
+		} else {
+			lower = i
+		}
+	}
+	return noGoPos[lower]
+}
+
+const MAXPOS, BASE int = 70, 1024
 
 func Solve(filepath string) {
-	space := ParseInput(filepath, 1024)
+	noGoPos := ParseInput(filepath)
+	space := NewSpace(noGoPos[:BASE])
 
 	fmt.Printf("Part 01: %v\n", space.MinSteps())
+	fmt.Printf("Part 02: %v\n", FirstBlockPosition(noGoPos))
 }
