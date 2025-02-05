@@ -59,6 +59,28 @@ func (c *Computer) run() {
 	}
 }
 
+func FindAToOutputProgram(program []int) int {
+	// DFS recursion to find the remainder (r) that outputs program[i]
+	var dfs func(r, i int) int
+	dfs = func(r, i int) int {
+		if i < 0 {
+			return r
+		}
+		r <<= 3
+		for d := 0; d < 8; d++ {
+			c := Computer{A: r + d, program: program}
+			c.sweep() // Perform one iteration of the program
+			if c.output[0] == c.program[i] {
+				if r := dfs(r+d, i-1); r > 0 {
+					return r
+				}
+			}
+		}
+		return -1
+	}
+	return dfs(0, len(program)-1)
+}
+
 func (c Computer) String() string {
 	outStr := make([]string, len(c.output))
 	for i, val := range c.output {
@@ -71,9 +93,11 @@ func Solve() {
 	// Initialize manually
 	computer := Computer{
 		A:       0,
-		program: []int{0},
+		program: []int{},
 	}
 
 	computer.run()
 	fmt.Printf("Part 01: %v\n", computer)
+
+	fmt.Printf("Part 02: %v\n", FindAToOutputProgram(computer.program))
 }

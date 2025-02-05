@@ -7,6 +7,20 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 17
+Today turned out to be a recursion problem as well, but of a kind I have not seen before. Two key insights from [this Reddit comment](https://www.reddit.com/r/adventofcode/comments/1hg38ah/comment/m2gizvj) helped me solve it on my own:
+1. Only the A registry is carried over each iteration. The B and C regestries are reset.
+2. Dividing A by 2**3 is the same as consuming the three lowest bits of A.
+
+Inspecting the program, we see that:
+1. The first part is an expression that outputs a 3-bit integer (0-7) depending only on `A`. `B` and `C` are reset after each iteration.
+2. The second part consumes the 3 lowest bits of `A` and loops back to the beginning until `A` is zero.
+
+Using this, we can design a recursive algorithm to reverse engineer the initial `A` needed to output a copy of the program:
+1. For the last iteration of the program loop, we need `A` to be a 3-bit integer (0-7) that outputs the last program instruction.
+2. For the second to last iteration, we need `A` to be a 6-bit integer that (1) yields the 3-bit `A` from above and (2) outputs the second to last program instruction. The first requirement can be satisfied by bit-shifting the previous `A` by 3 (`A << 3`). The second requirement can be satisfied by adding 3-bit integers to the shifted `A`. If no 3-bit integer can be added to output the second to last instruction, we must go back one step to find another `A`.
+3. We repeat this until the output is a complete copy of the program.
+
 ### Day 16
 The first part use Dijkstra (BFS with min priority queue) to explore paths from S to E that minimize the score. The second part use recursive DFS on the paths explored by Dijkstra to return tiles on a path which minimize the score.
 
