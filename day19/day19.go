@@ -7,22 +7,22 @@ import (
 )
 
 // Recursive memoized DFS
-func CanDesign(design string, options []string, memo map[string]bool) bool {
+func DesignPermutations(design string, options []string, memo map[string]int) int {
 	if result, tried := memo[design]; tried {
 		return result
 	}
 	if design == "" {
-		return true
+		return 1
 	}
+	permutations := 0
 	for _, opt := range options {
 		n := len(opt)
-		if n <= len(design) && design[:n] == opt && CanDesign(design[n:], options, memo) {
-			memo[design] = true
-			return true
+		if n <= len(design) && design[:n] == opt {
+			permutations += DesignPermutations(design[n:], options, memo)
 		}
 	}
-	memo[design] = false
-	return false
+	memo[design] = permutations
+	return permutations
 }
 
 func ParseInput(filepath string) (options, designs []string) {
@@ -36,13 +36,15 @@ func ParseInput(filepath string) (options, designs []string) {
 func Solve(filepath string) {
 	options, designs := ParseInput(filepath)
 
-	count := 0
+	canDesign, permutations := 0, 0
+	memo := make(map[string]int)
 	for _, design := range designs {
-		memo := make(map[string]bool)
-		if CanDesign(design, options, memo) {
-			count++
+		if p := DesignPermutations(design, options, memo); p > 0 {
+			canDesign++
+			permutations += p
 		}
 	}
 
-	fmt.Printf("Part 01: %v\n", count)
+	fmt.Printf("Part 01: %v\n", canDesign)
+	fmt.Printf("Part 02: %v\n", permutations)
 }
