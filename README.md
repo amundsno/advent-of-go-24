@@ -7,6 +7,13 @@ My goal for this year's advent of code is to enjoy the puzzles and gain some fam
 
 ## Daily notes
 
+### Day 20
+Another maze problem, but with a nice twist. Very satisfied with my solution.
+
+There is only one way to traverse the maze. Starting from the end, we can step through it to create a map of how many steps there are to reach the end (value) from every position (key). For every position in this map, we can attempt a cheat to all positions in range (step radius). The cheat is valid only if it lands on an open space - i.e. the end position exist as a key in the map we created. The cheat is interesting only if it saves time compared to traversing the maze.
+
+I wrote a custom iterator to scan over all possible points in range (radius) of each position. I later realized that I could instead have iterated over all the keys in the map to check if the Manhattan distance is smaller than or equal to the max cheat distance. While this is logically simpler, it scales with the size of the maze. Iterating over possible points in range only scales with the maximum cheat distance. As the cheat distance is a lot smaller than the number of keys in the map (i.e. open points on the maze), it is quite a bit faster.
+
 ### Day 19
 Text book dynamic programming problem. Used a memoized DFS recursion. In part 01 I only kept track of whether the design was possible or not. For part 02 I memoized the number of possible permutations per design. Again suprised how straight forward this problem was compared to previous days.
 

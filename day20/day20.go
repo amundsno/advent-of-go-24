@@ -58,19 +58,11 @@ type Cheat struct {
 	start, end Vec2D
 }
 
-func (rm RaceMaze) CheatsByTimeSaved(timeByNode map[Vec2D]int) map[int][]Cheat {
+func (rm RaceMaze) CheatsByTimeSaved(maxCheat int, timeByNode map[Vec2D]int) map[int][]Cheat {
 	cheatsByTime := make(map[int][]Cheat)
 
 	for node, time := range timeByNode {
-		for _, dir := range maze.DIRECTIONS {
-			cheatStart := node.Add(dir)
-
-			// It is only a cheat if we pass through a wall
-			if rm.Get(cheatStart.Y, cheatStart.X) != maze.WALL {
-				continue
-			}
-
-			cheatEnd := cheatStart.Add(dir)
+		for cheatEnd := range rm.NodesInRange(node, maxCheat) {
 			cheatTime, canCheat := timeByNode[cheatEnd]
 
 			// The cheat is valid only if we end up on the maze path
@@ -78,14 +70,14 @@ func (rm RaceMaze) CheatsByTimeSaved(timeByNode map[Vec2D]int) map[int][]Cheat {
 				continue
 			}
 
-			delta := time - cheatTime - 2
+			delta := time - cheatTime - rm.DirectSteps(node, cheatEnd)
 
 			// Only cheats that yield a better time are of interest
 			if delta <= 0 {
 				continue
 			}
 
-			cheatsByTime[delta] = append(cheatsByTime[delta], Cheat{cheatStart, cheatEnd})
+			cheatsByTime[delta] = append(cheatsByTime[delta], Cheat{node, cheatEnd})
 		}
 	}
 	return cheatsByTime
@@ -96,14 +88,25 @@ func Solve(filepath string) {
 	rm := RaceMaze{&m}
 
 	timeByNode := rm.TimeToEndByNode()
-	cheatsByTime := rm.CheatsByTimeSaved(timeByNode)
 
+	// Part 01
+	cheatsByTime := rm.CheatsByTimeSaved(2, timeByNode)
 	count := 0
 	for time, cheats := range cheatsByTime {
 		if time >= 100 {
 			count += len(cheats)
 		}
 	}
-
 	fmt.Printf("Part 01: %v\n", count)
+
+	// Part 02
+	cheatsByTime = rm.CheatsByTimeSaved(20, timeByNode)
+	count = 0
+	for time, cheats := range cheatsByTime {
+		if time >= 100 {
+			count += len(cheats)
+		}
+	}
+	fmt.Printf("Part 02: %v\n", count)
+
 }
